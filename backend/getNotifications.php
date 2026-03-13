@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $sql = "SELECT * FROM notifications ORDER BY created_at DESC";
+        $sql = "SELECT n.id,n.title,n.description,n.created_at,n.send_to,u.name AS sender_name,u.surname AS sender_surname,u.email AS sender_email FROM notifications n JOIN users u ON n.sender_id = u.id ORDER BY n.created_at DESC;";
         $result = $conn->query($sql);
         $notifications = array();
         if ($result->num_rows > 0) {
@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $notifications[] = $row;
             }
         }
+        echo json_encode($notifications);
         $conn->close();
        
     } else {
