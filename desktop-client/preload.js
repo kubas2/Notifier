@@ -9,10 +9,16 @@ contextBridge.exposeInMainWorld("api", {
       body: `secret=${encodeURIComponent(secretKey)}`
     });
 
+    const text = await response.text();
+
     if (!response.ok) {
-      throw new Error(`Błąd sieci: ${response.status}`);
+      throw new Error(`Błąd sieci: ${response.status} ${response.statusText} — odpowiedź: ${text}`);
     }
 
-    return response.json();
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error(`Nieprawidłowe JSON w odpowiedzi: ${e.message}. Odpowiedź serwera: ${text}`);
+    }
   }
 });
