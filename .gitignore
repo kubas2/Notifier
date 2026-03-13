@@ -1,7 +1,7 @@
 ############################
 # Node.js
 ############################
-
+backend/config.php
 node_modules/
 desktop-client/node_modules/
 
