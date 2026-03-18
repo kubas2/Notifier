@@ -15,11 +15,36 @@
             <h2>Welcome to the best realtime notification system for businesses 🚀</h2>
         </header>
             <h3>Dashboard</h3>
-            <ul id="notificationList"></ul>
-            <button id="loadNotifications">Wczytaj powiadomienia</button>
+            <div id="loginButtons">
+                <button id="showLogin">Login</button>
+                <button id="showSignup">Signup</button>
+                <button id="logoutButton" style="display: none;">Logout</button>
+            </div>
+            <div id="loginForms">
+                <div id="loginPage" style="display: none;">
+                    <h3>Login</h3>
+                    <input type="text" id="email" placeholder="Email">
+                    <input type="password" id="password" placeholder="Password">
+                    <button id="loginButton">Login</button>
+                </div>
+                <div id="signupPage" style="display: none;">
+                    <h3>Signup</h3>
+                    <input type="text" id="signupName" placeholder="Name">
+                    <input type="text" id="signupSurname" placeholder="Surname">
+                    <input type="text" id="signupEmail" placeholder="Email">
+                    <input type="password" id="signupPassword" placeholder="Password">
+                    <button id="signupButton">Signup</button>
+                </div>
+            </div>
+            <div id="notificationSection" style="display: none;">
+                <h3>Your Notifications</h3>
+                <ul id="notificationList"></ul>
+                <button id="loadNotifications">Wczytaj powiadomienia</button>
+                <button onclick="showNotification()">Test notification</button>
+            </div>
     </section>
     
-    <button onclick="showNotification()">Test notification</button>
+    
 
     <script src="renderer.js"></script>
 </body>
