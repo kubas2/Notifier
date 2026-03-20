@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-require_once "../backend/config.php";
+require_once "config.php";
 
 $conn = new mysqli(
     $dbConfig['host'],
