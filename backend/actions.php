@@ -77,7 +77,39 @@ if ($_POST['action'] == "getNotifications") {
     } else {
         echo json_encode(["success" => false, "error" => "User not found"]);
     }
-} else {
+} elseif ($_POST['action'] == "signup") {
+    if (!isset($_POST['email']) || !isset($_POST['password']) || !isset($_POST['name']) || !isset($_POST['surname'])) {
+        http_response_code(400);
+        echo json_encode(["error" => "Bad request"]);
+        exit;
+    }
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $name = $_POST['name'];
+    $surname = $_POST['surname'];
+
+    // sprawdzenie czy email już istnieje
+    $sql = "SELECT id from users where email = ? limit 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result && $result->num_rows > 0) {
+        echo json_encode(["success" => false, "error" => "Email already exists"]);
+    } else {
+        $sql = "INSERT INTO users (email, pass, name, surname) VALUES (?,?,?,?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $email, $password, $name, $surname);
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "user_id" => $stmt->insert_id]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Database error", "details" => $stmt->error]);
+        }
+    }
+} 
+
+else {
     http_response_code(400);
     echo json_encode(["error" => "Bad request"]);
     exit;

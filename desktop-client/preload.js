@@ -1,4 +1,4 @@
-const { contextBridge } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 const { secretKey } = require("./data"); // pobieramy tylko secretKey
 
 contextBridge.exposeInMainWorld("api", {
@@ -42,11 +42,11 @@ contextBridge.exposeInMainWorld("api", {
     }
   },
 
-  signUp: async (apiUrl, email, password, name, surname) => {
+  signup: async (apiUrl, email, password, name, surname) => {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${encodeURIComponent(secretKey)}&action=signUp&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&name=${encodeURIComponent(name)}&surname=${encodeURIComponent(surname)}`
+      body: `secret=${encodeURIComponent(secretKey)}&action=signup&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&name=${encodeURIComponent(name)}&surname=${encodeURIComponent(surname)}`
     });
 
     const text = await response.text();
@@ -60,5 +60,8 @@ contextBridge.exposeInMainWorld("api", {
     } catch (e) {
       throw new Error(`Nieprawidłowe JSON w odpowiedzi: ${e.message}. Odpowiedź serwera: ${text}`);
     }
-  }
+  },
+  minimize: () => ipcRenderer.send("window-minimize"),
+  maximize: () => ipcRenderer.send("window-maximize"),
+  close: () => ipcRenderer.send("window-close")
 });
