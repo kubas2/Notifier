@@ -17,6 +17,10 @@ $conn = new mysqli(
 
 $conn->set_charset('utf8mb4');
 
+$titleValue = $_POST['title'] ?? '';
+$descValue  = $_POST['description'] ?? '';
+$search     = $_POST['search'] ?? '';
+
 if (isset($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
 
@@ -28,7 +32,18 @@ if (isset($_POST['delete_id'])) {
     exit;
 }
 
-if (isset($_POST['title'])) {
+if (isset($_POST['make_admin'])) {
+    $id = $_POST['make_admin'];
+
+    $stmt = $conn->prepare("UPDATE users SET role='admin' WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    header("Location: dashboard.php?updated=1");
+    exit;
+}
+
+if (isset($_POST['title']) && !isset($_POST['searchBtn'])) {
     $title = $_POST['title'];
     $description = $_POST['description'];
     $users = $_POST['users'] ?? [];
@@ -51,19 +66,6 @@ if (isset($_POST['title'])) {
         exit;
     }
 }
-
-if (isset($_POST['make_admin'])) {
-    $id = $_POST['make_admin'];
-
-    $stmt = $conn->prepare("UPDATE users SET role='admin' WHERE id=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-
-    header("Location: dashboard.php?updated=1");
-    exit;
-}
-
-$search = $_GET['search'] ?? '';
 
 if ($search) {
     $stmt = $conn->prepare("SELECT * FROM users WHERE name LIKE ? OR surname LIKE ?");
@@ -94,28 +96,10 @@ ORDER BY n.created_at DESC
 
 <a href="logout.php">Wyloguj</a>
 
-<?php if (isset($_GET['success'])): ?>
-    <p class="msg">✔ Wysłano powiadomienie!</p>
-<?php endif; ?>
-
-<?php if (isset($_GET['deleted'])): ?>
-    <p class="msg">✔ Usunięto powiadomienie!</p>
-<?php endif; ?>
-
-<?php if (isset($_GET['updated'])): ?>
-    <p class="msg">✔ Zmieniono rolę!</p>
-<?php endif; ?>
-
-<?php if (isset($_GET['error'])): ?>
-    <p class="msg">❌ Wybierz użytkowników!</p>
-<?php endif; ?>
-
-<hr>
-
-<form method="GET">
-    <input name="search" placeholder="Szukaj użytkownika..." value="<?= $search ?>">
-    <button>Szukaj</button>
-</form>
+<?php if (isset($_GET['success'])): ?><p class="msg">✔ Wysłano powiadomienie!</p><?php endif; ?>
+<?php if (isset($_GET['deleted'])): ?><p class="msg">✔ Usunięto powiadomienie!</p><?php endif; ?>
+<?php if (isset($_GET['updated'])): ?><p class="msg">✔ Zmieniono rolę!</p><?php endif; ?>
+<?php if (isset($_GET['error'])): ?><p class="msg">❌ Wybierz użytkowników!</p><?php endif; ?>
 
 <hr>
 
@@ -123,8 +107,12 @@ ORDER BY n.created_at DESC
 
 <form method="POST">
 
-<input name="title" placeholder="Tytuł"><br>
-<textarea name="description" placeholder="Opis"></textarea><br>
+<input name="title" placeholder="Tytuł" value="<?= htmlspecialchars($titleValue) ?>"><br>
+
+<textarea name="description" placeholder="Opis"><?= htmlspecialchars($descValue) ?></textarea><br>
+
+<input name="search" placeholder="Szukaj użytkownika..." value="<?= htmlspecialchars($search) ?>">
+<button type="submit" name="searchBtn">Szukaj</button>
 
 <h4 onclick="toggleUsers()" style="cursor:pointer;">
 ▶ Użytkownicy (kliknij aby rozwinąć)
@@ -135,12 +123,9 @@ ORDER BY n.created_at DESC
 
 <br><br>
 
-<div id="usersBox" style="display:none;">
+<div id="usersBox" style="display:none; border:1px solid #ccc; max-height:200px; overflow-y:auto; padding:10px;">
 
-<?php
-$usersResult->data_seek(0);
-while($u = $usersResult->fetch_assoc()):
-?>
+<?php while($u = $usersResult->fetch_assoc()): ?>
 <label>
 <input type="checkbox" name="users[]" value="<?= $u['id'] ?>" class="userBox">
 <?= $u['name'] ?> <?= $u['surname'] ?>
@@ -240,9 +225,7 @@ if (window.location.search) {
 }
 
 setTimeout(() => {
-    document.querySelectorAll(".msg").forEach(el => {
-        el.style.display = "none";
-    });
+    document.querySelectorAll(".msg").forEach(el => el.style.display = "none");
 }, 3000);
 </script>
 
