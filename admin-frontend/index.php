@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "config.php";
+require_once "../backend/config.php";
 
 $conn = new mysqli(
     $dbConfig['host'],
@@ -39,19 +39,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
 <title>Login</title>
 </head>
-<body>
+<body class="login-page">
+
+<div class="login-container">
 
 <h2>Login admina</h2>
 
 <form method="POST">
-    <input name="email" placeholder="Email"><br>
-    <input name="password" type="password" placeholder="Hasło"><br>
+    <input name="email" placeholder="Email">
+    <input name="password" type="password" placeholder="Hasło">
     <button>Zaloguj</button>
 </form>
 
-<p style="color:red;"><?= $error ?></p>
+<p class="error"><?= $error ?></p>
 
-</body>
+</div>
+
+</body> 
 </html>

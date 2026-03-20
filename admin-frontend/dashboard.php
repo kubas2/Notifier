@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin'])) {
     exit;
 }
 
-require_once "config.php";
+require_once "../backend/config.php";
 
 $conn = new mysqli(
     $dbConfig['host'],
@@ -64,11 +64,12 @@ ORDER BY n.created_at DESC
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
 <title>Panel admina</title>
 </head>
 <body>
 
-<h2>Panel admina</h2>
+<h1>Panel admina</h1>
 
 <a href="logout.php">Wyloguj</a>
 
@@ -87,10 +88,8 @@ ORDER BY n.created_at DESC
 <br><br>
 
 <?php while($u = $usersResult->fetch_assoc()): ?>
-    <label>
-        <input type="checkbox" name="users[]" value="<?= $u['id'] ?>" class="userBox">
-        <?= $u['name'] ?> <?= $u['surname'] ?>
-    </label><br>
+<input type="checkbox" name="users[]" value="<?= $u['id'] ?>" id="user-<?= $u['id'] ?>" class="userBox">
+<label for="user-<?= $u['id'] ?>"><?= $u['name'] ?> <?= $u['surname'] ?></label><br>
 <?php endwhile; ?>
 
 <br>

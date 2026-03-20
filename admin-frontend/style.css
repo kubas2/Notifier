@@ -1,0 +1,232 @@
+
+* {
+    margin: 5px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #191919;
+    color: #f5f5f5;
+    padding: 30px;
+}
+
+
+h2, h3 {
+    color: #fff;
+}
+
+
+a {
+    text-decoration: none;
+    color: #fff;
+    background: #F5322C;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+a:hover {
+    background: #d92a25;
+}
+
+
+hr {
+    margin: 25px 0;
+    border: none;
+    height: 1px;
+    background: #333;
+}
+
+/* FORM */
+form {
+    background: #222;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    max-width: 600px;
+}
+
+/* INPUTS */
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #191919;
+    color: #fff;
+}
+
+input:focus, textarea:focus {
+    border-color: #F5322C;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    background: #F5322C;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    margin: 5px 5px 5px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #d92a25;
+}
+
+/* SECONDARY BUTTON */
+button[type="button"] {
+    background: #333;
+}
+
+button[type="button"]:hover {
+    background: #444;
+}
+
+/* LABELS */
+label {
+    display: block;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #222;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* TABLE HEADER */
+th {
+    background: #F5322C;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+/* TABLE CELLS */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    vertical-align: middle;
+}
+
+/* ROW HOVER */
+tr:hover {
+    background: #2a2a2a;
+}
+
+/* DELETE BUTTON */
+td form button {
+    background: #c0392b;
+    display: block;
+    margin: auto;
+}
+
+td form button:hover {
+    background: #a93226;
+}
+
+/* SUCCESS MESSAGE */
+p {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* ===== LOGIN ===== */
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* LOGIN CARD */
+.login-container {
+    background: #222;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* LOGIN INPUTS */
+.login-container input {
+    background: #191919;
+}
+
+/* ERROR */
+.error {
+    margin-top: 15px;
+    color: #F5322C;
+    font-weight: bold;
+}
+td form {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+/* CUSTOM CHECKBOX */
+.userBox {
+    display: none; 
+}
+
+label {
+    position: relative;
+    padding-left: 35px; 
+    cursor: pointer;
+    user-select: none;
+    font-size: 16px;
+}
+
+label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #F5322C;
+    border-radius: 6px;
+    background: #191919;
+    transition: all 0.2s;
+}
+
+label:hover::before {
+    border-color: #d92a25;
+}
+
+/* zaznaczony stan */
+.userBox:checked + label::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    width: 10px;
+    height: 16px;
+    border: solid #F5322C;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* zmiana koloru tła po zaznaczeniu */
+.userBox:checked + label::before {
+    background: #F5322C;
+    border-color: #F5322C;
+}
+
