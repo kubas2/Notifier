@@ -19,6 +19,7 @@ $conn->set_charset('utf8mb4');
 
 $titleValue = $_POST['title'] ?? '';
 $descValue = $_POST['description'] ?? '';
+$errorMsg = "";
 
 if (isset($_POST['delete_id'])) {
 $id = $_POST['delete_id'];
@@ -56,8 +57,7 @@ $stmt->execute();
 header("Location: dashboard.php?success=1");
 exit;
 } else {
-header("Location: dashboard.php?error=1");
-exit;
+$errorMsg = "❌ Wybierz użytkowników!";
 }
 }
 
@@ -75,31 +75,19 @@ ORDER BY n.created_at DESC
 <head>
 <meta charset="UTF-8">
 <title>Panel admina</title>
-
-<style>
-#usersBox {
-display:none;
-border:1px solid #ccc;
-max-height:200px;
-overflow-y:auto;
-padding:10px;
-}
-
-.userItem { padding:5px; }
-.userItem:hover { background:#eee; }
-.highlight { background:yellow; }
-</style>
-
 </head>
 <body>
 
 <h2>Panel admina</h2>
 <a href="logout.php">Wyloguj</a>
 
+<?php if ($errorMsg): ?>
+<p class="msg"><?= $errorMsg ?></p>
+<?php endif; ?>
+
 <?php if (isset($_GET['success'])): ?><p class="msg">✔ Wysłano powiadomienie!</p><?php endif; ?>
 <?php if (isset($_GET['deleted'])): ?><p class="msg">✔ Usunięto powiadomienie!</p><?php endif; ?>
 <?php if (isset($_GET['updated'])): ?><p class="msg">✔ Zmieniono rolę!</p><?php endif; ?>
-<?php if (isset($_GET['error'])): ?><p class="msg">❌ Wybierz użytkowników!</p><?php endif; ?>
 
 <hr>
 
@@ -108,12 +96,13 @@ padding:10px;
 <form method="POST">
 
 <input name="title" placeholder="Tytuł" value="<?= htmlspecialchars($titleValue) ?>" required><br>
+
 <textarea name="description" placeholder="Opis" required><?= htmlspecialchars($descValue) ?></textarea><br>
 
 <input id="searchInput" placeholder="Szukaj użytkownika...">
 
 <h4 onclick="toggleUsers()" style="cursor:pointer;">
-▶ Użytkownicy
+<span id="arrow">▶</span> Użytkownicy
 </h4>
 
 <div id="counter">Wybrano: 0</div>
@@ -123,7 +112,7 @@ padding:10px;
 
 <br><br>
 
-<div id="usersBox">
+<div id="usersBox" style="display:none;">
 
 <?php while($u = $usersResult->fetch_assoc()): ?>
 <label class="userItem">
@@ -209,7 +198,15 @@ while($u = $allUsers->fetch_assoc()):
 <script>
 function toggleUsers() {
 const box = document.getElementById("usersBox");
-box.style.display = (box.style.display === "none") ? "block" : "none";
+const arrow = document.getElementById("arrow");
+
+if (box.style.display === "none") {
+box.style.display = "block";
+arrow.innerText = "▼";
+} else {
+box.style.display = "none";
+arrow.innerText = "▶";
+}
 }
 
 function selectAll() {
@@ -235,33 +232,9 @@ document.getElementById("searchInput").addEventListener("input", function() {
 let value = this.value.toLowerCase();
 
 document.querySelectorAll(".userItem").forEach(item => {
-let nameEl = item.querySelector(".userName");
-let text = nameEl.innerText;
-let lower = text.toLowerCase();
-
-if (lower.includes(value)) {
-item.style.display = "block";
-
-let start = lower.indexOf(value);
-let end = start + value.length;
-
-if (value.length > 0) {
-nameEl.innerHTML =
-text.substring(0, start) +
-"<span class='highlight'>" +
-text.substring(start, end) +
-"</span>" +
-text.substring(end);
-} else {
-nameEl.innerHTML = text;
-}
-
-} else {
-item.style.display = "none";
-}
+let name = item.innerText.toLowerCase();
+item.style.display = name.includes(value) ? "block" : "none";
 });
-
-document.getElementById("usersBox").style.display = "block";
 });
 
 setTimeout(() => {
