@@ -216,6 +216,7 @@ window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("signupPassword").value = "";
             document.getElementById("signupName").value = "";
             document.getElementById("signupSurname").value = "";
+            document.getElementById("whoAmIText").innerText = "";
             MySwal.fire("Wylogowano", "Zostałeś wylogowany.", "success");
         });
     }
