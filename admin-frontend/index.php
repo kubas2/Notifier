@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../backend/config.php";
+require_once "config.php";
 
 $conn = new mysqli(
     $dbConfig['host'],
