@@ -31,22 +31,52 @@ $conn->set_charset('utf8mb4');
 
 
 if ($_POST['action'] == "getNotifications") {
-    $sql = "SELECT n.id,n.title,n.description,n.created_at,n.send_to,u.name AS sender_name,u.surname AS sender_surname,u.email AS sender_email FROM notifications n JOIN users u ON n.sender_id = u.id ORDER BY n.created_at DESC;";
-    $result = $conn->query($sql);
+    header('Content-Type: application/json; charset=utf-8');
+    
+    $email = $_POST['email'] ?? '';
 
-    $notifications = [];
-    if ($result && $result->num_rows > 0) {
+    // 1. Pobieramy ID użytkownika na podstawie maila
+    $userStmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+    $userStmt->bind_param("s", $email);
+    $userStmt->execute();
+    $userData = $userStmt->get_result()->fetch_assoc();
+
+    if (!$userData) {
+        echo json_encode(["error" => "User not found"]); 
+        exit;
+    }
+
+    $currentUserId = (int)$userData['id'];
+
+    // 2. Pobieramy WSZYSTKIE powiadomienia (tak jak w Twoim działającym teście)
+    $sql = "SELECT n.id, n.title, n.description, n.created_at, n.send_to, 
+                   u.name AS sender_name, u.surname AS sender_surname, u.email AS sender_email 
+            FROM notifications n 
+            JOIN users u ON n.sender_id = u.id 
+            ORDER BY n.created_at DESC";
+
+    $result = $conn->query($sql);
+    $filteredNotifications = [];
+
+    if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $notifications[] = $row;
+            // Dekodujemy kolumnę send_to z JSON na tablicę PHP
+            $sendToIds = json_decode($row['send_to'], true);
+
+            // Sprawdzamy, czy dekodowanie się udało i czy nasze ID jest w tej tablicy
+            if (is_array($sendToIds)) {
+                // in_array sprawdzi zarówno liczby 2, jak i stringi "2"
+                if (in_array($currentUserId, $sendToIds)) {
+                    $filteredNotifications[] = $row;
+                }
+            }
         }
     }
 
-    $json = json_encode($notifications, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
-    if ($json === false) {
-        echo json_encode(["error" => "JSON encode error", "details" => json_last_error_msg(), "data_sample" => array_slice($notifications, 0, 5)]);
-    } else {
-        echo $json;
-    }
+    // 3. Wysyłamy tylko te, które pasują
+    echo json_encode($filteredNotifications, JSON_UNESCAPED_UNICODE);
+    exit;
+
 } elseif ($_POST['action'] == "checkLogin") {
     if (!isset($_POST['email']) || !isset($_POST['password'])) {
         http_response_code(400);

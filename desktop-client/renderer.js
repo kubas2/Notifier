@@ -14,41 +14,29 @@ async function showNotification() {
     });
 }
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
-/*async function loadNotifications() {
-    try {
-        // Pobranie powiadomień z main process
-        const notifications = await window.api.getNotifications(apiUrl); // tu musi być await
-
-        console.log(notifications);
-
-        const list = document.getElementById("notificationList");
-
-        list.innerHTML = notifications.map(n => {
-            const recipients = JSON.parse(n.send_to || "[]"); // JSON -> tablica JS
-            return `
-            <li>
-            <strong>${n.title}</strong> <em>od ${n.sender_name} ${n.sender_surname}</em><br>
-            ${n.description}<br>
-            <small>Email nadawcy: ${n.sender_email}</small><br>
-            <small>Utworzono: ${new Date(n.created_at).toLocaleString()}</small>
-            </li>
-        `;
-        }).join("");
-    } catch (error) {
-        console.error("Błąd podczas pobierania powiadomień:", error);
-        MySwal.fire("Błąd", "Nie można pobrać powiadomień: " + error.message, "error");
+async function showNewNotifications(newNotifications) {
+    for (const n of newNotifications) {
+        new Notification(n.title, {
+            body: n.description
+        });
+        await delay(5000);
     }
-}*/
+}
 
 async function loadNotifications() {
     try {
-        const notifications = await window.api.getNotifications(apiUrl);
-
-    
+        const notifications = await window.api.getNotifications(apiUrl, window.session.email); 
         const count = notifications.length;
-        
-   
+        const lastSeenId = parseInt(localStorage.getItem("lastNotificationId") || "0");
+        const newNotifications = notifications.filter(n => n.id > lastSeenId);
+
+        if (newNotifications.length > 0) {
+            showNewNotifications(newNotifications)
+        }
+
+        /////
         const countElement = document.getElementById("notifCount");
         if (countElement) {
             countElement.innerText = count;
@@ -67,7 +55,10 @@ async function loadNotifications() {
             </li>
             `;
         }).join("");
-        
+
+        window.session.notificationsCount = notifications.length;
+        const newestId = Math.max(...notifications.map(n => parseInt(n.id)));
+        localStorage.setItem("lastNotificationId", newestId.toString());
     } catch (error) {
         console.error("Błąd podczas pobierania powiadomień:", error);
         MySwal.fire("Błąd", "Nie można pobrać powiadomień: " + error.message, "error");
@@ -116,7 +107,7 @@ async function loadLoginPage(afterSignup = false) {
             document.getElementById("logoutButton").style.display = "block";
             document.getElementById("showLogin").style.display = "none";
             document.getElementById("showSignup").style.display = "none";
-            
+            document.getElementById("whoAmIText").innerText = "Witaj, " + window.session.email;
             MySwal.fire("Sukces!", "Zalogowano pomyślnie!", "success"); 
         } else {
             window.session = {

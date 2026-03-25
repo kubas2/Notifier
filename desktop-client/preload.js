@@ -2,14 +2,15 @@ const { contextBridge, ipcRenderer } = require("electron");
 const { secretKey } = require("./data"); // pobieramy tylko secretKey
 
 contextBridge.exposeInMainWorld("api", {
-  getNotifications: async (apiUrl) => {
+  getNotifications: async (apiUrl, email) => {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${encodeURIComponent(secretKey)}&action=getNotifications`
+      body: `secret=${encodeURIComponent(secretKey)}&action=getNotifications&email=${encodeURIComponent(email)}`
     });
 
     const text = await response.text();
+  
 
     if (!response.ok) {
       throw new Error(`Błąd sieci: ${response.status} ${response.statusText} — odpowiedź: ${text}`);
