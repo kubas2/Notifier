@@ -77,8 +77,8 @@ async function loadLoginPage(afterSignup = false) {
         if (afterSignup) {
             
             MySwal.fire({
-                title: "Logowanie...",
-                text: "Sprawdzanie danych logowania po rejestracji",
+                title: "Logging in...",
+                text: "Checking login details after registration",
                 timer: 1500,
                 showConfirmButton: false,
                 didOpen: () => { Swal.showLoading(); }
@@ -107,8 +107,8 @@ async function loadLoginPage(afterSignup = false) {
             document.getElementById("logoutButton").style.display = "block";
             document.getElementById("showLogin").style.display = "none";
             document.getElementById("showSignup").style.display = "none";
-            document.getElementById("whoAmIText").innerText = "Witaj, " + window.session.email;
-            MySwal.fire("Sukces!", "Zalogowano pomyślnie!", "success"); 
+            document.getElementById("whoAmIText").innerText = "Welcome, " + window.session.email;
+            MySwal.fire("Success!", "Logged in successfully!", "success");
         } else {
             window.session = {
                 loggedIn: false
@@ -116,17 +116,17 @@ async function loadLoginPage(afterSignup = false) {
             // Zastąpienie alertów debugujących ładnym oknem błędu
             MySwal.fire({
                 icon: 'error',
-                title: 'Błąd logowania',
-                text: 'Nieprawidłowy email lub hasło.',
-                footer: `<small>Próba logowania na: ${document.getElementById("email").value}</small>`
+                title: 'Login Error',
+                text: 'Invalid email or password.',
+                footer: `<small>Login attempt for: ${document.getElementById("email").value}</small>`
             });
         }
     } catch (error) {
         window.session = {
             loggedIn: false
         }
-        console.error("Błąd podczas logowania:", error);
-        MySwal.fire("Błąd", "Nie można załadować systemu logowania: " + error.message, "error"); 
+        console.error("Error logging in:", error);
+        MySwal.fire("Error", "Unable to load login system: " + error.message, "error");
     }
 }
 
@@ -141,26 +141,26 @@ async function loadSignupPage() {
             
             if (signup.success) {
                 loadLoginPage(true);
-                MySwal.fire("Gratulacje!", "Zarejestrowano pomyślnie!", "success"); 
+                MySwal.fire("Congratulations!", "Registered successfully!", "success");
             } else {
                 window.session = {
                     loggedIn: false
                 }
-                MySwal.fire("Błąd rejestracji", "Nieprawidłowe dane rejestracji.", "error");
+                MySwal.fire("Registration Error", "Invalid registration details.", "error");
             }
     } catch (error) {
         window.session = {
             loggedIn: false
         }
-        console.error("Błąd podczas ładowania systemu rejestracji:", error);
-        MySwal.fire("Błąd", "Nie można załadować systemu rejestracji: " + error.message, "error"); 
+        console.error("Error loading registration system:", error);
+        MySwal.fire("Error", "Unable to load registration system: " + error.message, "error");
     }
 }
 
 function startAutoRefresh() {
     setInterval(() => {
         if (window.session && window.session.loggedIn) {
-            console.log("Automatyczne odświeżanie powiadomień...");
+            console.log("Automatic notification refresh...");
             loadNotifications();
         }
     }, 10000);  //10 sekund
@@ -217,7 +217,7 @@ window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("signupName").value = "";
             document.getElementById("signupSurname").value = "";
             document.getElementById("whoAmIText").innerText = "";
-            MySwal.fire("Wylogowano", "Zostałeś wylogowany.", "success");
+            MySwal.fire("Logged Out", "You have been logged out.", "success");
         });
     }
 
